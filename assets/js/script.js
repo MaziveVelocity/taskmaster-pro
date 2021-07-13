@@ -60,6 +60,41 @@ $("#task-form-modal").on("shown.bs.modal", function() {
   $("#modalTaskDescription").trigger("focus");
 });
 
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  update: function(event) {
+    var tempArr = [];
+
+    $(this).children().each(function() {
+      var arrName = $(this)
+      .attr("id")
+      .replace("list-", "");
+
+      tasks[arrName] = tempArr;
+      saveTasks();
+
+      var text = $(this).find("p").text().trim();
+      var date = $(this).find("span").text().trim();
+
+      tempArr.push({
+        text: text,
+        date: date
+      })
+    });
+  }
+});
+
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function(event, ui) {
+    ui.draggable.remove();
+  }
+});
+
 // save button in modal was clicked
 $("#task-form-modal .btn-primary").click(function() {
   // get form values
@@ -184,8 +219,6 @@ $("#remove-tasks").on("click", function() {
   }
   saveTasks();
 });
-
-
 
 // load tasks for the first time
 loadTasks();
